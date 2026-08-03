@@ -1,196 +1,153 @@
-# SystemSieve
+<p align="center">
+  <img src="src/systemsieve/resources/icons/systemsieve.png" width="120" alt="SystemSieve logo">
+</p>
 
-A Windows desktop utility for discovering installed software, safely uninstalling or
-updating it, and finding large files and folders to reclaim disk space.
+<h1 align="center">SystemSieve</h1>
 
-[![Tests](https://github.com/systemsieve/systemsieve/actions/workflows/tests.yml/badge.svg)](https://github.com/systemsieve/systemsieve/actions/workflows/tests.yml)
-[![Lint](https://github.com/systemsieve/systemsieve/actions/workflows/lint.yml/badge.svg)](https://github.com/systemsieve/systemsieve/actions/workflows/lint.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+<p align="center">
+  A safety-first Windows utility for reviewing installed software, uninstalling and updating
+  applications, and finding large files and folders.
+</p>
 
-> **⚠️ Test in a virtual machine first.** SystemSieve performs potentially destructive
-> operations (uninstalling software, deleting files). Do not use an early build to remove
-> important software from your main PC. See [docs/testing.md](docs/testing.md) for a safe
-> manual test procedure, and [docs/safety.md](docs/safety.md) for the full safety model.
+<p align="center">
+  <a href="https://github.com/MuhammadMuneeb007/systemsieve/actions/workflows/tests.yml"><img src="https://github.com/MuhammadMuneeb007/systemsieve/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/MuhammadMuneeb007/systemsieve/actions/workflows/lint.yml"><img src="https://github.com/MuhammadMuneeb007/systemsieve/actions/workflows/lint.yml/badge.svg" alt="Lint"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
+</p>
+
+> [!WARNING]
+> SystemSieve can uninstall software and delete files. Test pre-release builds in a virtual
+> machine first. Review every plan before execution and keep Preview Only enabled until you
+> understand the proposed operation.
 
 ## Screenshots
 
-![SystemSieve applications inventory with safety color coding](docs/screenshots/applications.png)
+![Applications inventory with safety colors and selection controls](docs/screenshots/applications.png)
 
-The Applications view supports multi-row selection, checkbox selection, searching, category
-filters, sortable columns, safety color coding, and Explorer actions. Screenshot data is
-representative and does not contain a real machine inventory.
+![Dashboard](docs/screenshots/dashboard.png)
 
-![SystemSieve dashboard](docs/screenshots/dashboard.png)
+![Uninstall progress with per-application results](docs/screenshots/uninstall-progress.png)
 
-![SystemSieve uninstall progress and per-application results](docs/screenshots/uninstall-progress.png)
+Screenshots contain representative data and do not expose a real computer inventory.
 
-## Features
+## Highlights
 
-- **Application inventory** — discovers installed software from the 64-bit, 32-bit, and
-  per-user uninstall registry keys, plus WinGet, and merges duplicates into one view.
-- **Rich inspection** — version, publisher, size, install date, install location, safety
-  classification, and conservative "last activity" evidence (never claimed as certain).
-- **Actionable tables** — sortable columns, multi-row and checkbox selection, safety status
-  colors, context menus, and direct “Open Location”/“Show in Explorer” actions.
-- **Safe uninstallation** — WinGet, MSI product code, quiet uninstall, or standard
-  uninstall commands, always previewed, always confirmed, dry-run by default.
-- **Updates via WinGet** — check for and apply updates with dry-run previews and progress
-  reporting; never guesses at package IDs.
-- **Disk scanner** — fast, cancellable, metadata-only scan for large files/folders, file
-  categories (including ML/scientific file types), old files, and recently modified files.
-- **Safe file deletion** — Recycle Bin by default; permanent deletion requires two explicit
-  confirmations and is never the default.
-- **Local-only history** — SQLite-backed operation history, scan history, and inventory
-  snapshots. No telemetry, no analytics, fully offline except WinGet package lookups.
-- **GUI and CLI** — a PySide6 desktop app and a scriptable Typer-based CLI share the same
-  safety-first core.
+- Application inventory from Windows registry sources and WinGet, with duplicate merging.
+- Search, category filtering, sortable columns, multi-row selection, and full-cell checkboxes.
+- Clear safety classification: normal, review required, protected, or unknown.
+- Inspect details, open install locations, and reveal files in Windows Explorer.
+- Uninstall through WinGet, MSI, or validated vendor uninstallers.
+- Persistent uninstall progress with queued, running, completed, failed, and cancelled states.
+- WinGet update discovery and dry-run previews.
+- Cancellable storage scans with large, old, recent, and categorized file views.
+- Recycle Bin deletion by default and protected-path enforcement.
+- Local SQLite history with no telemetry or analytics.
+- Both graphical and command-line interfaces.
 
-## Safety model (summary)
+## Install the Windows release
 
-- Nothing is uninstalled or deleted immediately after selection — every destructive action
-  goes through a preview + confirmation step.
-- Dry-run is the default everywhere; you must explicitly disable it (GUI checkbox, or
-  `--execute` on the CLI) to make a real change.
-- Commands are never built as shell strings. Registry uninstall strings are parsed into
-  validated argument arrays and executed with `shell=False`; unsupported or suspicious
-  commands are never auto-executed.
-- Protected Windows components, drivers, security/VPN software, runtimes, database
-  servers, and shared frameworks are flagged or blocked before removal.
-- The whole application never runs elevated. Only the single operation that needs
-  administrator rights is escalated, via a dedicated elevation helper and a UAC prompt.
-- Whole-directory deletion of `C:\Windows`, `C:\Program Files`, `C:\Program Files (x86)`,
-  `C:\ProgramData`, drive roots, the user profile root, and recovery partitions is blocked.
+1. Open the [latest GitHub release](https://github.com/MuhammadMuneeb007/systemsieve/releases/latest).
+2. Download `SystemSieve-Windows-x64-v0.1.1.zip`.
+3. Extract the entire ZIP to a normal folder.
+4. Run `SystemSieve.exe` from the extracted folder.
 
-Read the full details in [docs/safety.md](docs/safety.md).
+Do not move the EXE out of its extracted folder: the standalone build requires the bundled
+`_internal` files beside it.
 
-## Installation
+> [!IMPORTANT]
+> The current executable is unsigned. Windows SmartScreen may show an unrecognized publisher
+> warning. Public production releases should be code-signed.
 
-```bash
-pip install systemsieve
+## Install with Python
+
+SystemSieve requires Windows 10/11 and Python 3.11 or newer.
+
+Install directly from GitHub:
+
+```bat
+py -m pip install "git+https://github.com/MuhammadMuneeb007/systemsieve.git@main"
+systemsieve doctor
+systemsieve gui
 ```
 
-Requires Windows 10/11 and Python 3.11+. Most features (registry scanning, WinGet,
-elevation, restore points) only work on Windows; the codebase itself imports cleanly on
-other platforms for development purposes.
+Or clone it for development:
 
-## Quick start
-
-```bash
-systemsieve doctor        # sanity-check your environment
-systemsieve apps list     # see what's installed
-systemsieve gui           # launch the desktop app
+```bat
+git clone https://github.com/MuhammadMuneeb007/systemsieve.git
+cd systemsieve
+py -m venv .venv
+.venv\Scripts\activate
+py -m pip install -e ".[dev]"
+systemsieve gui
 ```
 
-## GUI usage
+After a package is published to PyPI, installation will be:
 
-Launch with `systemsieve gui` (or `python -m systemsieve gui`). The main window has eight
-sections: Dashboard, Applications, Updates, Storage, Scan History, Operations, Settings,
-and About. Every scan, WinGet call, and uninstall/update runs on a background thread, so
-the interface stays responsive.
+```bat
+py -m pip install systemsieve
+```
 
-Every uninstall or update goes through a preview dialog showing the exact command that
-will run and whether administrator access is required, before anything happens.
+## Safe GUI workflow
 
-## CLI usage
+1. Select applications using checkboxes or highlighted rows.
+2. Keep **Preview only - no software will be removed** enabled for the first run.
+3. Review the exact uninstall method and command.
+4. For real removal, disable Preview Only and confirm the warning.
+5. Follow the operation window for restore-point, UAC, installer, and final-result status.
 
-```bash
+All long-running inventory, WinGet, update, uninstall, and storage operations run outside the
+UI thread so the interface remains responsive.
+
+## Command-line examples
+
+```bat
+systemsieve doctor
 systemsieve apps list
 systemsieve apps inspect "7-Zip"
 systemsieve apps updates
-systemsieve apps uninstall "Example App"                 # dry run (default)
-systemsieve apps uninstall "Example App" --execute        # real removal, asks to confirm
-systemsieve apps uninstall "Example App" --execute --yes  # real removal, no prompt
-systemsieve apps update "Example App" --execute
-systemsieve apps export --format csv
-systemsieve disk scan C:\Users\you\Downloads
-systemsieve disk largest C:\ --limit 100
-systemsieve disk categories C:\Users\you
+systemsieve apps uninstall "Example App"
+systemsieve apps uninstall "Example App" --execute
+systemsieve disk scan "C:\Users\you\Downloads"
 systemsieve history operations
 ```
 
-### Dry-run explanation
+Destructive CLI commands default to dry-run mode. Real changes require `--execute`; interactive
+confirmation remains enabled unless `--yes` is also supplied.
 
-Every destructive CLI command defaults to a dry run: it prints the exact plan (application,
-publisher, version, method, command, whether admin access is required) and makes no
-changes. Pass `--execute` to perform the real action; you'll still be asked to confirm
-unless you also pass `--yes`. `--yes` is rejected unless `--execute` is also given, and
-`--dry-run`/`--execute` together is rejected as a usage error.
+## Safety and privacy
 
-## Windows support
+- Commands use validated argument arrays with `shell=False`.
+- Protected Windows components and dangerous deletion targets are blocked.
+- The main application does not run elevated; only a validated operation requests UAC.
+- Script-based uninstallers are not executed automatically.
+- Inventory, scan, and operation history stays on the local computer.
+- No telemetry or analytics is collected.
 
-SystemSieve targets Windows 10 and Windows 11. Registry scanning, WinGet integration,
-elevation, and restore points all rely on Windows-only APIs and are not available on other
-platforms.
+Read [Safety](docs/safety.md), [Privacy](docs/privacy.md), and
+[Security reporting](SECURITY.md) before release use.
 
-## Limitations
+## Build and test
 
-- WinGet integration depends on WinGet being installed and its text output format; parsing
-  is defensive but not guaranteed to match every WinGet version.
-- Activity detection is conservative and explicitly not a guarantee — see
-  [docs/safety.md](docs/safety.md#activity-detection).
-- Script-based uninstallers (`.bat`, `.cmd`, `.vbs`, `.ps1`, etc.) are never auto-executed;
-  they are reported as unsupported.
-- Leftover registry keys and folders are not cleaned up after uninstall in this release.
-- Secure/multi-pass file erasure is not implemented; deletion uses the Recycle Bin or a
-  single permanent delete.
-
-## Development setup
-
-```bash
-git clone https://github.com/systemsieve/systemsieve.git
-cd systemsieve
-python -m venv .venv
-.venv\Scripts\activate
-pip install -e ".[dev]"
-pre-commit install
+```bat
+powershell -ExecutionPolicy Bypass -File ".\scripts\test.ps1"
+powershell -ExecutionPolicy Bypass -File ".\scripts\build_windows.ps1"
 ```
 
-## Testing
+The standalone output is written to `dist\SystemSieve\`. See
+[Release instructions](docs/release.md) and [VM testing](docs/testing.md).
 
-```bash
-pytest -m "not manual and not destructive" --cov=systemsieve
-```
+## Current limitations
 
-See [docs/testing.md](docs/testing.md) for the recommended virtual-machine test procedure
-before using a build on a real system.
+- WinGet integration depends on the installed WinGet version and its text output.
+- Activity evidence is conservative and is not proof that an application was or was not used.
+- Vendor uninstallers may open their own wizard and require interaction.
+- Leftover registry entries and application folders are not automatically removed.
+- The current Windows build is not code-signed.
 
-## Packaging
+## Contributing and licence
 
-```bash
-python -m build                          # sdist + wheel
-pyinstaller packaging/systemsieve.spec   # standalone Windows executable
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md). SystemSieve is available under the
+[MIT License](LICENSE).
 
-See [docs/release.md](docs/release.md) for details.
-
-## Roadmap
-
-- Rust-backed disk scanner for large volumes.
-- Optional leftover registry/folder cleanup (explicit opt-in).
-- Richer third-party uninstall wizard automation.
-- Code-signed release builds.
-
-## Security reporting
-
-Please report vulnerabilities privately — see [SECURITY.md](SECURITY.md). Do not open a
-public issue for security reports.
-
-## Privacy
-
-SystemSieve works entirely offline except for WinGet package lookups. It stores inventory
-snapshots, scan history, and operation history locally in SQLite. It sends no telemetry and
-includes no analytics. See [docs/privacy.md](docs/privacy.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Licence
-
-MIT — see [LICENSE](LICENSE).
-
-## Disclaimer
-
-SystemSieve is provided "as is", without warranty of any kind. Uninstalling software or
-deleting files can have consequences that are not fully reversible, even with a system
-restore point. Use at your own risk, and test in a virtual machine first.
+SystemSieve is provided without warranty. Uninstalling software or deleting files may not be
+fully reversible, even when a restore point is requested.

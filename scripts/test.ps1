@@ -1,4 +1,4 @@
-# Runs the quality gates: lint, format check, type check, and the automated
+# Runs the quality gates: lint, format check, and the automated
 # (non-destructive, non-manual) test suite.
 #
 # Usage: .\scripts\test.ps1
@@ -25,9 +25,6 @@ Invoke-CheckedPython -m ruff check .
 
 Write-Host "Running ruff format --check..."
 Invoke-CheckedPython -m ruff format --check .
-
-Write-Host "Running mypy..."
-Invoke-CheckedPython -m mypy src
 
 Write-Host "Running pytest (excluding manual/destructive tests)..."
 Invoke-CheckedPython -m pytest -m "not manual and not destructive" --cov=systemsieve

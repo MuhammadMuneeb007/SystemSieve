@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "systemsieve"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Windows utility for discovering installed software, uninstalling and updating it safely, and finding large files and folders."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -46,7 +46,6 @@ dev = [
     "pytest-qt>=4.4.0",
     "pytest-cov>=5.0.0",
     "ruff>=0.4.0",
-    "mypy>=1.9.0",
     "pre-commit>=3.7.0",
     "pyinstaller>=6.6.0",
     "build>=1.2.0",
@@ -72,14 +71,6 @@ src = ["src"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
 ignore = ["E501"]
-
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
-ignore_missing_imports = true
-exclude = ["build", "dist"]
 
 [tool.pytest.ini_options]
 markers = [

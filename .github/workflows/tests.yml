@@ -32,16 +32,5 @@ jobs:
           python -m systemsieve version
           python -m systemsieve doctor
 
-      # This project's automated pytest suite is still being built out. Once
-      # tests/ contains real, non-destructive tests, this step will start
-      # collecting and running them automatically -- see docs/testing.md for
-      # the safety conventions any new tests must follow (never uninstall
-      # real software or delete real files; use fakes/mocks for anything
-      # destructive).
-      - name: Run pytest (if tests exist)
-        run: |
-          if (Test-Path "tests") {
-            pytest -m "not manual and not destructive" --cov=systemsieve
-          } else {
-            Write-Host "No tests/ directory yet; skipping pytest."
-          }
+      - name: Run safe automated tests
+        run: pytest -m "not manual and not destructive" --cov=systemsieve

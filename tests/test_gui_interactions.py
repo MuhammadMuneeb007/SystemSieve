@@ -16,6 +16,7 @@ from systemsieve.gui.models.applications_model import (
 from systemsieve.gui.pages.applications_page import ApplicationsPage
 from systemsieve.gui.pages.storage_page import StoragePage
 from systemsieve.gui.pages.updates_page import UpdatesPage
+from systemsieve.gui.shell_actions import existing_location, open_path
 from systemsieve.models.application import InstalledApplication
 from systemsieve.models.operation import UninstallMethod, UninstallPlan, UninstallStep
 from systemsieve.models.storage import FileItem
@@ -161,3 +162,24 @@ def test_winget_uninstall_passes_elevated_validation() -> None:
 
     assert command[0] == "winget.exe"
     assert valid, reason
+
+
+def test_existing_location_handles_registry_icon_index(tmp_path) -> None:
+    executable = tmp_path / "Example App.exe"
+    executable.touch()
+
+    result = existing_location(f'"{executable}",-12')
+
+    assert result == executable.resolve()
+
+
+def test_open_path_validates_and_uses_windows_shell(tmp_path, monkeypatch) -> None:
+    opened: list[tuple[str, str | None]] = []
+    monkeypatch.setattr(
+        "systemsieve.gui.shell_actions._shell_execute",
+        lambda target, parameters=None: opened.append((target, parameters)),
+    )
+
+    open_path(tmp_path)
+
+    assert opened == [(str(tmp_path.resolve()), None)]

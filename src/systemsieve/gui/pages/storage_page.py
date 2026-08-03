@@ -300,9 +300,21 @@ class StoragePage(QWidget):
         if not items:
             show_warning(self, "No selection", "Select one or more file rows first.")
             return
+        failures: list[str] = []
         for item in items:
-            reveal_in_explorer(Path(item.path))
-        self.status_message.emit(f"Revealed {len(items)} item(s) in Explorer.")
+            try:
+                reveal_in_explorer(Path(item.path))
+            except OSError:
+                failures.append(item.path)
+        opened = len(items) - len(failures)
+        self.status_message.emit(f"Revealed {opened}/{len(items)} item(s) in Explorer.")
+        if failures:
+            show_warning(
+                self,
+                "Could not open some locations",
+                "These paths no longer exist or Windows could not open them:\n"
+                + "\n".join(failures),
+            )
 
     def _reveal_table(self, table: QTableView) -> None:
         self.tabs.setCurrentWidget(table)
@@ -310,7 +322,11 @@ class StoragePage(QWidget):
 
     def _reveal_folder_index(self, index) -> None:
         source_index = self._folders_proxy.mapToSource(index)
-        reveal_in_explorer(Path(self._folders_model.item_at(source_index.row()).path))
+        path = Path(self._folders_model.item_at(source_index.row()).path)
+        try:
+            reveal_in_explorer(path)
+        except OSError as exc:
+            show_warning(self, "Could not open Explorer", str(exc))
 
     def _show_file_context_menu(self, table: QTableView, position) -> None:
         self.tabs.setCurrentWidget(table)

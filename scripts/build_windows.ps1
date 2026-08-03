@@ -19,7 +19,7 @@ if (-not (Test-Path $venvPython)) {
 
 Write-Host "Cleaning previous build artifacts..."
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$root\build"
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$root\dist"
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$root\dist\SystemSieve"
 
 Write-Host "Running PyInstaller..."
 & $venvPython -m PyInstaller "packaging\systemsieve.spec" --noconfirm

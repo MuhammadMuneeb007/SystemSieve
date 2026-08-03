@@ -7,6 +7,21 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-03
+
+### Fixed
+
+- Made checkbox cells reliably clickable across Applications, Updates, and Storage tables.
+- Added persistent uninstall progress, per-application results, and clear preview/real modes.
+- Corrected WinGet elevation validation so approved uninstall requests can execute.
+- Made install-location and Explorer actions reliable in packaged Windows builds.
+- Repaired README branding, encoding, repository links, warnings, and installation guidance.
+
+### Changed
+
+- Removed generated artifacts from source-control scope and corrected release quality gates.
+- Preserved Python wheel/sdist artifacts when producing the standalone Windows build.
+
 ## [0.1.0] - 2026-08-03
 
 ### Added

@@ -99,6 +99,9 @@ class HistoryPage(QWidget):
         item = self.table.item(row, 2)
         path = Path(str(item.data(Qt.UserRole) or item.text()))
         if path.exists():
-            open_path(path)
+            try:
+                open_path(path)
+            except OSError as exc:
+                self.status_message.emit(f"Could not open scan root: {exc}")
         else:
             self.status_message.emit(f"Scan root no longer exists: {path}")

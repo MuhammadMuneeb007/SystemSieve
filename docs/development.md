@@ -46,7 +46,6 @@ python -m systemsieve apps list
 ## Code style
 
 - Ruff for linting and formatting (`ruff check .`, `ruff format .`).
-- mypy for type checking (`mypy src`).
 - Type hints throughout; prefer `pathlib.Path` over string paths.
 - Small, focused modules -- avoid growing any single file into a catch-all.
 

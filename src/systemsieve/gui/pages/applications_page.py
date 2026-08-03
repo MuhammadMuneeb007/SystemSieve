@@ -397,7 +397,9 @@ class ApplicationsPage(QWidget):
 
     def _application_location(self, app_record: InstalledApplication) -> Path | None:
         command_path = app_record.uninstall_command[0] if app_record.uninstall_command else None
-        location = existing_location(app_record.install_location, command_path)
+        location = existing_location(
+            app_record.install_location, app_record.display_icon, command_path
+        )
         if location and location.is_file():
             return location.parent
         return location
@@ -412,8 +414,11 @@ class ApplicationsPage(QWidget):
         for app_record in selected:
             location = self._application_location(app_record)
             if location:
-                open_path(location)
-                opened += 1
+                try:
+                    open_path(location)
+                    opened += 1
+                except OSError:
+                    missing.append(app_record.display_name)
             else:
                 missing.append(app_record.display_name)
         self.status_message.emit(f"Opened {opened} application location(s).")
@@ -430,9 +435,14 @@ class ApplicationsPage(QWidget):
             return
         app_record = selected[0]
         command_path = app_record.uninstall_command[0] if app_record.uninstall_command else None
-        target = existing_location(command_path, app_record.install_location)
+        target = existing_location(
+            app_record.display_icon, command_path, app_record.install_location
+        )
         if target:
-            reveal_in_explorer(target)
+            try:
+                reveal_in_explorer(target)
+            except OSError as exc:
+                show_warning(self, "Could not open Explorer", str(exc))
         else:
             show_warning(
                 self, "Location unavailable", "No existing executable or folder was reported."

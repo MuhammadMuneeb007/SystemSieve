@@ -21,6 +21,8 @@ env/
 .coverage.*
 htmlcov/
 coverage.xml
+/SystemSieve-Windows-*.zip
+/SystemSieve-Windows-*.sha256
 
 # PyInstaller
 *.spec.bak

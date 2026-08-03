@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from systemsieve.gui.shell_actions import open_path
 from systemsieve.paths import log_dir
 
 COLUMNS = ["Timestamp", "Operation", "Target", "Dry Run", "Admin", "Exit Code", "Result", "Details"]
@@ -96,6 +97,7 @@ class OperationsPage(QWidget):
         self.refresh()
 
     def _open_log_folder(self) -> None:
-        import os
-
-        os.startfile(str(log_dir()))  # noqa: S606 - user-initiated, opens Explorer only
+        try:
+            open_path(log_dir())
+        except OSError as exc:
+            self.status_message.emit(f"Could not open log folder: {exc}")
