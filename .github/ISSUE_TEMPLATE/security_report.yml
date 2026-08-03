@@ -1,0 +1,18 @@
+name: Security / Safety Report
+description: >
+  Do not use this template for vulnerabilities you have not yet discussed with maintainers.
+  See SECURITY.md and report privately first.
+labels: ["security"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Stop.** Please do not file a public issue for a security or safety vulnerability.
+
+        Follow the private reporting process described in
+        [SECURITY.md](https://github.com/systemsieve/systemsieve/blob/main/SECURITY.md)
+        instead: use GitHub's private vulnerability reporting for this repository, or
+        contact the maintainers directly.
+
+        This template exists only so security reports are not accidentally filed as public
+        issues. If you are seeing this, please close this form and use the private channel.

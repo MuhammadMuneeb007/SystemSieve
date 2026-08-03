@@ -1,0 +1,67 @@
+name: Release
+
+# Template workflow: adapt the publish steps with your own PyPI trusted-publishing
+# or token configuration before enabling this to run automatically on tags.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build-python-package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+
+  build-windows-executable:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Build with PyInstaller
+        run: pyinstaller packaging/systemsieve.spec --noconfirm
+
+      - name: Zip the build
+        run: Compress-Archive -Path dist/SystemSieve/* -DestinationPath SystemSieve-windows.zip
+
+      - name: Upload executable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SystemSieve-windows-zip
+          path: SystemSieve-windows.zip
+
+  # Publishing steps (PyPI upload, GitHub Release creation) are intentionally left
+  # as manual/documented steps -- see docs/release.md -- until this repository has
+  # its own PyPI trusted-publishing configuration and a code-signing process for
+  # the Windows executable.

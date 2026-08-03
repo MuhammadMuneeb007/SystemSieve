@@ -1,0 +1,90 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "systemsieve"
+version = "0.1.0"
+description = "A Windows utility for discovering installed software, uninstalling and updating it safely, and finding large files and folders."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "SystemSieve Contributors" }]
+keywords = ["windows", "uninstaller", "disk-usage", "software-inventory", "pyside6"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Win32 (MS Windows)",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
+dependencies = [
+    # PySide6 6.10.3 and 6.11.1 have a broken native Qt6Core.dll on at least some Windows
+    # configurations (verified: Qt6Core.dll itself fails to load with
+    # "DLL load failed: the specified procedure could not be found", even in
+    # a fully isolated venv with a scrubbed PATH -- 6.8.0.2 works correctly
+    # in the same environment). Pin the verified working release until this is
+    # root-caused upstream; see docs/development.md#troubleshooting.
+    "PySide6==6.8.0.2",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+    "send2trash>=1.8.2",
+    "platformdirs>=4.2.0",
+    "psutil>=5.9.8",
+    "packaging>=24.0",
+    "pydantic>=2.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-qt>=4.4.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.9.0",
+    "pre-commit>=3.7.0",
+    "pyinstaller>=6.6.0",
+    "build>=1.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/systemsieve/systemsieve"
+Repository = "https://github.com/systemsieve/systemsieve"
+Issues = "https://github.com/systemsieve/systemsieve/issues"
+Documentation = "https://github.com/systemsieve/systemsieve/tree/main/docs"
+
+[project.scripts]
+systemsieve = "systemsieve.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/systemsieve"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = ["build", "dist"]
+
+[tool.pytest.ini_options]
+markers = [
+    "manual: developer-only manual test, not run in CI",
+    "destructive: modifies real system state, requires explicit opt-in env var",
+    "windows_only: only runs on Windows",
+]
+testpaths = ["tests"]
